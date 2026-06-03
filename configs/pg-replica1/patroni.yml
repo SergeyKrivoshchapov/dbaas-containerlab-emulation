@@ -1,0 +1,58 @@
+scope: postgres-ha-cluster
+namespace: /service
+name: pg-replica1
+
+etcd3:
+  hosts:
+    - 10.0.2.2:2379
+    - 10.0.3.2:2379
+    - 10.0.4.2:2379
+
+restapi:
+  listen: 10.0.3.2:8008
+  connect_address: 10.0.3.2:8008
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        shared_buffers: 128MB
+        wal_level: replica
+        max_wal_senders: 10
+        max_replication_slots: 10
+        hot_standby: "on"
+
+  initdb:
+    - encoding: UTF8
+    - data-checksums
+
+  pg_hba:
+    - host replication replicator 10.0.0.0/16 md5
+    - host all all 10.0.0.0/16 md5
+
+  users:
+    admin:
+      password: adminpassword
+      options:
+        - superuser
+        - createdb
+
+postgresql:
+  listen: 10.0.3.2:5432
+  connect_address: 10.0.3.2:5432
+  data_dir: /data/patroni/pgdata
+  bin_dir: /usr/local/bin
+  pgpass: /data/patroni/.pgpass
+  authentication:
+    replication:
+      username: replicator
+      password: replpassword
+    superuser:
+      username: postgres
+      password: postgrespassword

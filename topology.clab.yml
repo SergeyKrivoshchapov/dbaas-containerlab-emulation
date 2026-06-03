@@ -1,0 +1,87 @@
+name: ha_lab
+topology:
+  nodes:
+    router1:
+      kind: linux
+      image: frrouting/frr:v8.4.1
+      binds:
+        - ./configs/router1/frr.conf:/etc/frr/frr.conf
+        - ./configs/router1/daemons:/etc/frr/daemons
+
+    pg-master:
+      kind: linux
+      image: postgres-patroni:15
+      cmd: "tail -f /dev/null"
+      binds:
+        - ./configs/pg-master/patroni.yml:/etc/patroni/patroni.yml
+      exec:
+        - ip addr add 10.0.2.2/24 dev eth1
+        - ip link set eth1 up
+        - ip route del default dev eth0
+        - ip route add default via 10.0.2.1 dev eth1
+        # 1. Запуск etcd
+        - etcd --name etcd-master --initial-advertise-peer-urls
+          http://10.0.2.2:2380 --listen-peer-urls http://10.0.2.2:2380
+          --listen-client-urls http://10.0.2.2:2379,http://127.0.0.1:2379
+          --advertise-client-urls http://10.0.2.2:2379 --initial-cluster-token
+          etcd-cluster-1 --initial-cluster
+          etcd-master=http://10.0.2.2:2380,etcd-replica1=http://10.0.3.2:2380,etcd-replica2=http://10.0.4.2:2380
+          --initial-cluster-state new > /tmp/etcd.log 2>&1 &
+        - sleep 2 && patroni /etc/patroni/patroni.yml > /tmp/patroni.log 2>&1 &
+
+    pg-replica1:
+      kind: linux
+      image: postgres-patroni:15
+      cmd: "tail -f /dev/null"
+      binds:
+        - ./configs/pg-replica1/patroni.yml:/etc/patroni/patroni.yml
+      exec:
+        - ip addr add 10.0.3.2/24 dev eth1
+        - ip link set eth1 up
+        - ip route del default dev eth0
+        - ip route add default via 10.0.3.1 dev eth1
+        - etcd --name etcd-replica1 --initial-advertise-peer-urls
+          http://10.0.3.2:2380 --listen-peer-urls http://10.0.3.2:2380
+          --listen-client-urls http://10.0.3.2:2379,http://127.0.0.1:2379
+          --advertise-client-urls http://10.0.3.2:2379 --initial-cluster-token
+          etcd-cluster-1 --initial-cluster
+          etcd-master=http://10.0.2.2:2380,etcd-replica1=http://10.0.3.2:2380,etcd-replica2=http://10.0.4.2:2380
+          --initial-cluster-state new > /tmp/etcd.log 2>&1 &
+        - sleep 2 && patroni /etc/patroni/patroni.yml > /tmp/patroni.log 2>&1 &
+
+    pg-replica2:
+      kind: linux
+      image: postgres-patroni:15
+      cmd: "tail -f /dev/null"
+      binds:
+        - ./configs/pg-replica2/patroni.yml:/etc/patroni/patroni.yml
+      exec:
+        - ip addr add 10.0.4.2/24 dev eth1
+        - ip link set eth1 up
+        - ip route del default dev eth0
+        - ip route add default via 10.0.4.1 dev eth1
+        - etcd --name etcd-replica2 --initial-advertise-peer-urls
+          http://10.0.4.2:2380 --listen-peer-urls http://10.0.4.2:2380
+          --listen-client-urls http://10.0.4.2:2379,http://127.0.0.1:2379
+          --advertise-client-urls http://10.0.4.2:2379 --initial-cluster-token
+          etcd-cluster-1 --initial-cluster
+          etcd-master=http://10.0.2.2:2380,etcd-replica1=http://10.0.3.2:2380,etcd-replica2=http://10.0.4.2:2380
+          --initial-cluster-state new > /tmp/etcd.log 2>&1 &
+        - sleep 2 && patroni /etc/patroni/patroni.yml > /tmp/patroni.log 2>&1 &
+
+    haproxy:
+      kind: linux
+      image: alpine:latest
+      cmd: "tail -f /dev/null"
+      exec:
+        - apk add --no-cache haproxy
+        - ip addr add 10.0.1.2/24 dev eth1
+        - ip link set eth1 up
+        - ip route del default dev eth0
+        - ip route add default via 10.0.1.1 dev eth1
+
+  links:
+    - endpoints: ["haproxy:eth1", "router1:eth1"]
+    - endpoints: ["pg-master:eth1", "router1:eth2"]
+    - endpoints: ["pg-replica1:eth1", "router1:eth3"]
+    - endpoints: ["pg-replica2:eth1", "router1:eth4"]

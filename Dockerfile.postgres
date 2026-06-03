@@ -1,0 +1,13 @@
+FROM postgres:15-alpine
+
+RUN apk add --no-cache python3 py3-pip jq curl etcd etcd-ctl iproute2
+
+RUN python3 -m venv /opt/patroni-env && \
+  /opt/patroni-env/bin/pip install --no-cache-dir --upgrade pip && \
+  /opt/patroni-env/bin/pip install --no-cache-dir patroni[etcd3] psycopg2-binary
+
+ENV PATH="/opt/patroni-env/bin:$PATH"
+
+RUN mkdir -p /data/patroni /etc/patroni && chown -R postgres:postgres /data/patroni /etc/patroni /var/log
+
+USER postgres
