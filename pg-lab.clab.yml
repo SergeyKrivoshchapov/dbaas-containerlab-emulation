@@ -1,0 +1,37 @@
+name: pg-lab
+
+mgmt:
+  network: pg-lab-net
+  ipv4-subnet: 172.20.20.0/24
+
+topology:
+  nodes:
+    etcd:
+      kind: linux
+      image: ubuntu:22.04
+      binds:
+        - ./etcd.conf:/etc/default/etcd
+      cmd: sleep infinity
+      mgmt-ipv4: 172.20.20.10
+
+    node1:
+      kind: linux
+      cmd: sleep infinity
+      binds:
+        - ./patroni_cfg/patroni-node1.yml:/etc/patroni.yml
+        - ./patroni_cfg/run_patroni.sh:/usr/local/bin/run_patroni.sh
+      image: postgres-patrony:15
+      mgmt-ipv4: 172.20.20.11
+
+    node2:
+      kind: linux
+      cmd: sleep infinity
+      binds:
+        - ./patroni_cfg/patroni-node2.yml:/etc/patroni.yml
+        - ./patroni_cfg/run_patroni.sh:/usr/local/bin/run_patroni.sh
+      image: postgres-patrony:15
+      mgmt-ipv4: 172.20.20.12
+
+  links:
+    - endpoints: ["node1:eth1", "etcd:eth1"]
+    - endpoints: ["node2:eth1", "etcd:eth2"]

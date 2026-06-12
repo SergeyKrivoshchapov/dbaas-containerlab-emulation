@@ -1,0 +1,215 @@
+{
+  "name": "pg-lab",
+  "type": "clab",
+  "clab": {
+    "config": {
+      "prefix": "clab",
+      "mgmt": {
+        "network": "clab",
+        "bridge": "br-fdf031d83d58",
+        "ipv4-subnet": "172.20.20.0/24",
+        "ipv4-gw": "172.20.20.1",
+        "ipv6-subnet": "3fff:172:20:20::/64",
+        "ipv6-gw": "3fff:172:20:20::1",
+        "external-access": true
+      }
+    }
+  },
+  "ssh-pub-keys": ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICPOY1+B2k0fUinaII06gBgMIS06ci9Gw4IElMk6S9G9","ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDKNPBFaGaNCHLsdt0qP0aNh8i30GgXx99a7YU5pOUiENV9xdb9cSmGELPHGBkKD1HnQ98pKrKSNG4Cvln/GUANYBIKzgFnGobC0uMI0sjBJg7HfVpCsst0vsRaSuLZlr6E7f3nXyjuF0pNKFJrKOO3mqBcBrRtrZuBJXQXnj5geiJi8kCehAglqMZ86JMbgqoeSp0H+oh7G/Qhg7QnQUwteoXQwdQkOkf7/pKDMh4zLtvr3FuC6Vnf11HhxrjXFV8oQXMI3Sa+nrdmR8fUNasZr+KvpczHzG8FU3tgK58P2UMns4ttGYYwLDuEwljQJM3h2ILwchhvPklg5NZpw/Vuel9W35IuSa11iJNe8+jqMvU8c5uLp6gbBafpKERv2UsAucsIfFVPmds6/DrkvkbzfuYNrTWP/H8nYD2Rsz745BBibp9DjjtQI68OwS9wmQIxOUNTlX5aeE0h1QZ4h6IhxeOf35YHHbJIkz2C5RMAmxzJbxz9PQx2esW08f2XdOeMHlNRtrpHqqW7XhsJHhnUGNggcjxgoVtzqwaw+ecNA2G8+nyEBRQZaRR+Txe1R5kp11/8V3AS02Zglur3/mtr/g8X1ejyxkKp701vHyv+2zIoP2vy2tVgnlThEQRN0cdTFdn95haeJvfVnOQY3V9U+Goy6vTjE3YWDfrjylqXfw=="],
+  "nodes": {
+    "etcd": {
+      "index": "0",
+      "shortname": "etcd",
+      "longname": "clab-pg-lab-etcd",
+      "fqdn": "etcd.pg-lab.io",
+      "group": "",
+      "labdir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/etcd",
+      "kind": "linux",
+      "image": "ubuntu:22.04",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.14",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::e",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "master",
+        "clab-git-hash": "397ae1d",
+        "clab-mgmt-net-bridge": "br-fdf031d83d58",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/etcd",
+        "clab-node-longname": "clab-pg-lab-etcd",
+        "clab-node-name": "etcd",
+        "clab-node-type": "",
+        "clab-owner": "serg",
+        "clab-topo-file": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/topology.yml",
+        "containerlab": "pg-lab"
+      },
+      "port-bindings": [
+      ]
+    },
+    "haproxy": {
+      "index": "1",
+      "shortname": "haproxy",
+      "longname": "clab-pg-lab-haproxy",
+      "fqdn": "haproxy.pg-lab.io",
+      "group": "",
+      "labdir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/haproxy",
+      "kind": "linux",
+      "image": "haproxy:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.16",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::10",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "master",
+        "clab-git-hash": "397ae1d",
+        "clab-mgmt-net-bridge": "br-fdf031d83d58",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/haproxy",
+        "clab-node-longname": "clab-pg-lab-haproxy",
+        "clab-node-name": "haproxy",
+        "clab-node-type": "",
+        "clab-owner": "serg",
+        "clab-topo-file": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/topology.yml",
+        "containerlab": "pg-lab"
+      },
+      "port-bindings": [
+        {
+          "host-ip": "0.0.0.0",
+          "host-port": 5432,
+          "port": 5432,
+          "protocol": "tcp"
+        },
+        {
+          "host-ip": "::",
+          "host-port": 5432,
+          "port": 5432,
+          "protocol": "tcp"
+        }
+      ]
+    },
+    "node1": {
+      "index": "2",
+      "shortname": "node1",
+      "longname": "clab-pg-lab-node1",
+      "fqdn": "node1.pg-lab.io",
+      "group": "",
+      "labdir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/node1",
+      "kind": "linux",
+      "image": "postgres-patrony:15",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.4",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::4",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "master",
+        "clab-git-hash": "397ae1d",
+        "clab-mgmt-net-bridge": "br-fdf031d83d58",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/node1",
+        "clab-node-longname": "clab-pg-lab-node1",
+        "clab-node-name": "node1",
+        "clab-node-type": "",
+        "clab-owner": "serg",
+        "clab-topo-file": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/topology.yml",
+        "containerlab": "pg-lab"
+      },
+      "port-bindings": [
+      ]
+    },
+    "node2": {
+      "index": "3",
+      "shortname": "node2",
+      "longname": "clab-pg-lab-node2",
+      "fqdn": "node2.pg-lab.io",
+      "group": "",
+      "labdir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/node2",
+      "kind": "linux",
+      "image": "postgres-patrony:15",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.8",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::8",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "master",
+        "clab-git-hash": "397ae1d",
+        "clab-mgmt-net-bridge": "br-fdf031d83d58",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/node2",
+        "clab-node-longname": "clab-pg-lab-node2",
+        "clab-node-name": "node2",
+        "clab-node-type": "",
+        "clab-owner": "serg",
+        "clab-topo-file": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/topology.yml",
+        "containerlab": "pg-lab"
+      },
+      "port-bindings": [
+      ]
+    }
+  },
+  "links": [
+    {
+      "endpoints": {
+        "a": {
+          "node": "node1",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:eb:de:80",
+          "peer": "z"
+        },
+        "z": {
+          "node": "etcd",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:b1:f2:b2",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "node2",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:7e:88:fd",
+          "peer": "z"
+        },
+        "z": {
+          "node": "etcd",
+          "interface": "eth2",
+          "mac": "aa:c1:ab:d0:18:70",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "haproxy",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:db:0e:d2",
+          "peer": "z"
+        },
+        "z": {
+          "node": "etcd",
+          "interface": "eth3",
+          "mac": "aa:c1:ab:39:63:7d",
+          "peer": "a"
+        }
+      }
+    }
+  ]
+}

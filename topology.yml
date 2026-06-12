@@ -1,0 +1,43 @@
+name: pg-lab
+
+topology:
+  nodes:
+    etcd:
+      kind: linux
+      image: ubuntu:22.04
+      binds:
+        - ./etcd.conf:/etc/default/etcd
+      cmd: sleep infinity
+
+    node1:
+      kind: linux
+      cmd: sleep infinity
+      binds:
+        - ./patroni_cfg/patroni-node1.yml:/etc/patroni.yml
+        - ./patroni_cfg/run_patroni.sh:/usr/local/bin/run_patroni.sh
+      image: postgres-patrony:15
+
+    node2:
+      kind: linux
+      cmd: sleep infinity
+      binds:
+        - ./patroni_cfg/patroni-node2.yml:/etc/patroni.yml
+        - ./patroni_cfg/run_patroni.sh:/usr/local/bin/run_patroni.sh
+      image: postgres-patrony:15
+
+    haproxy:
+      kind: linux
+      image: haproxy:latest
+      binds:
+        - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+      ports:
+        - 5432:5432
+      exec:
+        - echo "172.20.20.13 clab-pg-lab-node1" >> /etc/hosts
+        - echo "172.20.20.12 clab-pg-lab-node2" >> /etc/hosts
+      cmd: sleep infinity
+
+  links:
+    - endpoints: ["node1:eth1", "etcd:eth1"]
+    - endpoints: ["node2:eth1", "etcd:eth2"]
+    - endpoints: ["haproxy:eth1", "etcd:eth3"]

@@ -1,0 +1,49 @@
+scope: pg-ha-cluster
+name: pp_pg_2
+
+restapi:
+  listen: "*:8008"
+  connect_address: clab-pg-lab-node2:8008
+
+etcd:
+  host: clab-pg-lab-etcd:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 0
+    synchronous_mode: true
+    synchronous_mode_strict: false
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        max_connections: 200
+        wal_level: replica
+        max_wal_senders: 10
+        max_replication_slots: 10
+  initdb:
+    - encoding: UTF8
+    - data-checksums
+  pg_hba:
+    - host all postgres all md5
+    - host replication repl all md5
+
+postgresql:
+  listen: "*:5432"
+  connect_address: clab-pg-lab-node2:5432
+  data_dir: /var/lib/postgresql/data
+  bin_dir: /usr/lib/postgresql/15/bin
+  pg_hba:
+    - local all all trust
+    - host all postgres all md5
+    - host replication repl all md5
+  authentication:
+    replication:
+      username: repl
+      password: mypassword
+    superuser:
+      username: postgres
+      password: mypassword
