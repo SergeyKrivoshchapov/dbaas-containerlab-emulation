@@ -10,8 +10,8 @@ all:
         clab-pg-lab-etcd:
           ansible_host: 172.20.20.4
         clab-pg-lab-haproxy:
-          ansible_host: 172.20.20.8
-        clab-pg-lab-node1:
-          ansible_host: 172.20.20.14
-        clab-pg-lab-node2:
           ansible_host: 172.20.20.16
+        clab-pg-lab-node1:
+          ansible_host: 172.20.20.8
+        clab-pg-lab-node2:
+          ansible_host: 172.20.20.14
