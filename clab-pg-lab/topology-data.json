@@ -23,28 +23,28 @@
       "longname": "clab-pg-lab-etcd",
       "fqdn": "etcd.pg-lab.io",
       "group": "",
-      "labdir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/etcd",
+      "labdir": "/home/serg/Desktop/petprojects/dbaas-lab/clab-pg-lab/etcd",
       "kind": "linux",
       "image": "ubuntu:22.04",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.14",
+      "mgmt-ipv4-address": "172.20.20.4",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::e",
+      "mgmt-ipv6-address": "3fff:172:20:20::4",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
         "clab-git-branch": "master",
-        "clab-git-hash": "397ae1d",
+        "clab-git-hash": "ed676f3",
         "clab-mgmt-net-bridge": "br-fdf031d83d58",
         "clab-node-group": "",
         "clab-node-kind": "linux",
-        "clab-node-lab-dir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/etcd",
+        "clab-node-lab-dir": "/home/serg/Desktop/petprojects/dbaas-lab/clab-pg-lab/etcd",
         "clab-node-longname": "clab-pg-lab-etcd",
         "clab-node-name": "etcd",
         "clab-node-type": "",
         "clab-owner": "serg",
-        "clab-topo-file": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/topology.yml",
+        "clab-topo-file": "/home/serg/Desktop/petprojects/dbaas-lab/topology.yml",
         "containerlab": "pg-lab"
       },
       "port-bindings": [
@@ -56,28 +56,28 @@
       "longname": "clab-pg-lab-haproxy",
       "fqdn": "haproxy.pg-lab.io",
       "group": "",
-      "labdir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/haproxy",
+      "labdir": "/home/serg/Desktop/petprojects/dbaas-lab/clab-pg-lab/haproxy",
       "kind": "linux",
       "image": "haproxy:latest",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.16",
+      "mgmt-ipv4-address": "172.20.20.8",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::10",
+      "mgmt-ipv6-address": "3fff:172:20:20::8",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
         "clab-git-branch": "master",
-        "clab-git-hash": "397ae1d",
+        "clab-git-hash": "ed676f3",
         "clab-mgmt-net-bridge": "br-fdf031d83d58",
         "clab-node-group": "",
         "clab-node-kind": "linux",
-        "clab-node-lab-dir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/haproxy",
+        "clab-node-lab-dir": "/home/serg/Desktop/petprojects/dbaas-lab/clab-pg-lab/haproxy",
         "clab-node-longname": "clab-pg-lab-haproxy",
         "clab-node-name": "haproxy",
         "clab-node-type": "",
         "clab-owner": "serg",
-        "clab-topo-file": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/topology.yml",
+        "clab-topo-file": "/home/serg/Desktop/petprojects/dbaas-lab/topology.yml",
         "containerlab": "pg-lab"
       },
       "port-bindings": [
@@ -101,28 +101,28 @@
       "longname": "clab-pg-lab-node1",
       "fqdn": "node1.pg-lab.io",
       "group": "",
-      "labdir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/node1",
+      "labdir": "/home/serg/Desktop/petprojects/dbaas-lab/clab-pg-lab/node1",
       "kind": "linux",
       "image": "postgres-patrony:15",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.4",
+      "mgmt-ipv4-address": "172.20.20.14",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::4",
+      "mgmt-ipv6-address": "3fff:172:20:20::e",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
         "clab-git-branch": "master",
-        "clab-git-hash": "397ae1d",
+        "clab-git-hash": "ed676f3",
         "clab-mgmt-net-bridge": "br-fdf031d83d58",
         "clab-node-group": "",
         "clab-node-kind": "linux",
-        "clab-node-lab-dir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/node1",
+        "clab-node-lab-dir": "/home/serg/Desktop/petprojects/dbaas-lab/clab-pg-lab/node1",
         "clab-node-longname": "clab-pg-lab-node1",
         "clab-node-name": "node1",
         "clab-node-type": "",
         "clab-owner": "serg",
-        "clab-topo-file": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/topology.yml",
+        "clab-topo-file": "/home/serg/Desktop/petprojects/dbaas-lab/topology.yml",
         "containerlab": "pg-lab"
       },
       "port-bindings": [
@@ -134,28 +134,28 @@
       "longname": "clab-pg-lab-node2",
       "fqdn": "node2.pg-lab.io",
       "group": "",
-      "labdir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/node2",
+      "labdir": "/home/serg/Desktop/petprojects/dbaas-lab/clab-pg-lab/node2",
       "kind": "linux",
       "image": "postgres-patrony:15",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.8",
+      "mgmt-ipv4-address": "172.20.20.16",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "3fff:172:20:20::8",
+      "mgmt-ipv6-address": "3fff:172:20:20::10",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
         "clab-git-branch": "master",
-        "clab-git-hash": "397ae1d",
+        "clab-git-hash": "ed676f3",
         "clab-mgmt-net-bridge": "br-fdf031d83d58",
         "clab-node-group": "",
         "clab-node-kind": "linux",
-        "clab-node-lab-dir": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/clab-pg-lab/node2",
+        "clab-node-lab-dir": "/home/serg/Desktop/petprojects/dbaas-lab/clab-pg-lab/node2",
         "clab-node-longname": "clab-pg-lab-node2",
         "clab-node-name": "node2",
         "clab-node-type": "",
         "clab-owner": "serg",
-        "clab-topo-file": "/home/serg/Desktop/petprojects/pgsqlXcontainerlab_deployment/topology.yml",
+        "clab-topo-file": "/home/serg/Desktop/petprojects/dbaas-lab/topology.yml",
         "containerlab": "pg-lab"
       },
       "port-bindings": [
@@ -168,13 +168,13 @@
         "a": {
           "node": "node1",
           "interface": "eth1",
-          "mac": "aa:c1:ab:eb:de:80",
+          "mac": "aa:c1:ab:9d:5c:49",
           "peer": "z"
         },
         "z": {
           "node": "etcd",
           "interface": "eth1",
-          "mac": "aa:c1:ab:b1:f2:b2",
+          "mac": "aa:c1:ab:1c:b2:87",
           "peer": "a"
         }
       }
@@ -184,13 +184,13 @@
         "a": {
           "node": "node2",
           "interface": "eth1",
-          "mac": "aa:c1:ab:7e:88:fd",
+          "mac": "aa:c1:ab:d1:1d:6f",
           "peer": "z"
         },
         "z": {
           "node": "etcd",
           "interface": "eth2",
-          "mac": "aa:c1:ab:d0:18:70",
+          "mac": "aa:c1:ab:8d:40:88",
           "peer": "a"
         }
       }
@@ -200,13 +200,13 @@
         "a": {
           "node": "haproxy",
           "interface": "eth1",
-          "mac": "aa:c1:ab:db:0e:d2",
+          "mac": "aa:c1:ab:f4:b8:bf",
           "peer": "z"
         },
         "z": {
           "node": "etcd",
           "interface": "eth3",
-          "mac": "aa:c1:ab:39:63:7d",
+          "mac": "aa:c1:ab:c7:58:f1",
           "peer": "a"
         }
       }

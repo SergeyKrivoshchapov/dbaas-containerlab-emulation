@@ -3,19 +3,19 @@ etcd:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.14
+    hostname: 172.20.20.4
 haproxy:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.16
+    hostname: 172.20.20.8
 node1:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.4
+    hostname: 172.20.20.14
 node2:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.8
+    hostname: 172.20.20.16
