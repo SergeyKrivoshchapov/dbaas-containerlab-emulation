@@ -2,15 +2,29 @@ name: pg-lab
 
 topology:
   nodes:
+    router:
+      kind: linux
+      image: frrouting/frr:v8.4.1
+      binds:
+        - ./frr/daemons:/etc/frr/daemons
+        - ./frr/frr.conf:/etc/frr/frr.conf
+      exec:
+        - ip addr add 172.20.21.254/24 dev eth1
+        - ip addr add 172.20.21.254/24 dev eth2
+        - ip addr add 172.20.22.254/24 dev eth3
+        - ip addr add 172.20.23.254/24 dev eth4
+        - sysctl -w net.ipv4.ip_forward=1
+      cmd: /usr/lib/frr/docker-start
+
     etcd:
       kind: linux
       image: ubuntu:22.04
-      binds:
-        - ./etcd.conf:/etc/default/etcd
       cmd: sleep infinity
 
     node1:
       kind: linux
+      exec:
+        - ip addr add 172.20.21.11/24 dev eth1
       cmd: sleep infinity
       binds:
         - ./patroni_cfg/patroni-node1.yml:/etc/patroni.yml
@@ -20,6 +34,8 @@ topology:
     node2:
       kind: linux
       cmd: sleep infinity
+      exec:
+        - ip addr add 172.20.21.12/24 dev eth1
       binds:
         - ./patroni_cfg/patroni-node2.yml:/etc/patroni.yml
         - ./patroni_cfg/run_patroni.sh:/usr/local/bin/run_patroni.sh
@@ -32,12 +48,11 @@ topology:
         - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
       ports:
         - 5432:5432
-      exec:
-        - echo "172.20.20.13 clab-pg-lab-node1" >> /etc/hosts
-        - echo "172.20.20.12 clab-pg-lab-node2" >> /etc/hosts
+        - 5433:5433
       cmd: sleep infinity
 
   links:
-    - endpoints: ["node1:eth1", "etcd:eth1"]
-    - endpoints: ["node2:eth1", "etcd:eth2"]
-    - endpoints: ["haproxy:eth1", "etcd:eth3"]
+    - endpoints: ["node1:eth1", "router:eth1"]
+    - endpoints: ["node2:eth1", "router:eth2"]
+    - endpoints: ["haproxy:eth1", "router:eth3"]
+    - endpoints: ["etcd:eth1", "router:eth4"]
