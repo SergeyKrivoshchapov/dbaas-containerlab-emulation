@@ -12,11 +12,24 @@ topology:
         - ip addr add 172.20.21.254/24 dev eth1
         - ip addr add 172.20.21.254/24 dev eth2
         - ip addr add 172.20.22.254/24 dev eth3
-        - ip addr add 172.20.23.254/24 dev eth4
+        - ip addr add 172.20.22.254/24 dev eth4
+        - ip addr add 172.20.23.254/24 dev eth5
+        - ip addr add 172.20.23.254/24 dev eth6
+        - ip addr add 172.20.23.254/24 dev eth7
         - sysctl -w net.ipv4.ip_forward=1
       cmd: /usr/lib/frr/docker-start
 
-    etcd:
+    etcd1:
+      kind: linux
+      image: ubuntu:22.04
+      cmd: sleep infinity
+
+    etcd2:
+      kind: linux
+      image: ubuntu:22.04
+      cmd: sleep infinity
+
+    etcd3:
       kind: linux
       image: ubuntu:22.04
       cmd: sleep infinity
@@ -41,18 +54,31 @@ topology:
         - ./patroni_cfg/run_patroni.sh:/usr/local/bin/run_patroni.sh
       image: postgres-patrony:15
 
-    haproxy:
+    haproxy1:
       kind: linux
       image: haproxy:latest
       binds:
         - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+        - ./keepalived/keepalived1.conf:/etc/keepalived/keepalived.conf
       ports:
         - 5432:5432
         - 5433:5433
       cmd: sleep infinity
 
+    haproxy2:
+      kind: linux
+      image: haproxy:latest
+      binds:
+        - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+        - ./keepalived/keepalived2.conf:/etc/keepalived/keepalived.conf
+      cmd: sleep infinity
+
   links:
     - endpoints: ["node1:eth1", "router:eth1"]
     - endpoints: ["node2:eth1", "router:eth2"]
-    - endpoints: ["haproxy:eth1", "router:eth3"]
-    - endpoints: ["etcd:eth1", "router:eth4"]
+    - endpoints: ["haproxy1:eth1", "router:eth3"]
+    - endpoints: ["haproxy2:eth1", "router:eth4"]
+    - endpoints: ["etcd1:eth1", "router:eth5"]
+    - endpoints: ["etcd2:eth1", "router:eth6"]
+    - endpoints: ["etcd3:eth1", "router:eth7"]
+    - endpoints: ["haproxy1:eth2", "haproxy2:eth2"]

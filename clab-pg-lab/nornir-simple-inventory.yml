@@ -1,24 +1,39 @@
 ---
-etcd:
+etcd1:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.16
-haproxy:
+    hostname: 172.20.20.9
+etcd2:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.14
-node1:
+    hostname: 172.20.20.2
+etcd3:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.7
+haproxy1:
     username: 
     password: 
     platform: linux
     hostname: 172.20.20.8
+haproxy2:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.3
+node1:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.5
 node2:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.17
+    hostname: 172.20.20.6
 router:
     username: 
     password: 

@@ -6,7 +6,10 @@ restapi:
   connect_address: clab-pg-lab-node1:8008
 
 etcd:
-  host: clab-pg-lab-etcd:2379
+  hosts:
+    - clab-pg-lab-etcd1:2379
+    - clab-pg-lab-etcd2:2379
+    - clab-pg-lab-etcd3:2379
 
 bootstrap:
   dcs:
