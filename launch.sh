@@ -52,6 +52,12 @@ echo "Ok"
 docker exec -u root clab-pg-lab-haproxy1 bash -c 'apt-get update -qq && apt-get install -y -qq iproute2 && ip addr add 172.20.22.21/24 dev eth0' 2>/dev/null
 docker exec -u root clab-pg-lab-haproxy2 bash -c 'apt-get update -qq && apt-get install -y -qq iproute2 && ip addr add 172.20.22.22/24 dev eth0' 2>/dev/null
 
+# node_exporter на node1 и node2
+docker exec -u root clab-pg-lab-node1 bash -c 'apt-get update -qq && apt-get install -y -qq prometheus-node-exporter' 2>/dev/null
+docker exec -u root clab-pg-lab-node2 bash -c 'apt-get update -qq && apt-get install -y -qq prometheus-node-exporter' 2>/dev/null
+docker exec -d clab-pg-lab-node1 node_exporter --web.listen-address=:9100 2>/dev/null
+docker exec -d clab-pg-lab-node2 node_exporter --web.listen-address=:9100 2>/dev/null
+
 # haproxy1
 echo -n "Starting HAProxy1"
 kitty --title="haproxy1" bash -c "docker exec -it clab-pg-lab-haproxy1 haproxy -f /usr/local/etc/haproxy/haproxy.cfg -d" &
@@ -71,3 +77,5 @@ echo ""
 echo "Check:  docker exec clab-pg-lab-node1 patronictl -c /etc/patroni.yml list"
 echo "Write:  psql -h localhost -p 5432 -U postgres"
 echo "Read:   psql -h localhost -p 5433 -U postgres"
+echo "Prometheus: http://localhost:9090"
+echo "Grafana:    http://localhost:3000 (admin/admin)"

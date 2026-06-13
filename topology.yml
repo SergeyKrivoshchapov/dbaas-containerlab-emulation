@@ -16,6 +16,8 @@ topology:
         - ip addr add 172.20.23.254/24 dev eth5
         - ip addr add 172.20.23.254/24 dev eth6
         - ip addr add 172.20.23.254/24 dev eth7
+        - ip addr add 172.20.24.254/24 dev eth8
+        - ip addr add 172.20.24.254/24 dev eth9
         - sysctl -w net.ipv4.ip_forward=1
       cmd: /usr/lib/frr/docker-start
 
@@ -36,30 +38,29 @@ topology:
 
     node1:
       kind: linux
-      exec:
-        - ip addr add 172.20.21.11/24 dev eth1
-      cmd: sleep infinity
+      image: postgres-patrony:15
       binds:
         - ./patroni_cfg/patroni-node1.yml:/etc/patroni.yml
         - ./patroni_cfg/run_patroni.sh:/usr/local/bin/run_patroni.sh
-      image: postgres-patrony:15
+      exec:
+        - ip addr add 172.20.21.11/24 dev eth1
+      cmd: sleep infinity
 
     node2:
       kind: linux
-      cmd: sleep infinity
-      exec:
-        - ip addr add 172.20.21.12/24 dev eth1
+      image: postgres-patrony:15
       binds:
         - ./patroni_cfg/patroni-node2.yml:/etc/patroni.yml
         - ./patroni_cfg/run_patroni.sh:/usr/local/bin/run_patroni.sh
-      image: postgres-patrony:15
+      exec:
+        - ip addr add 172.20.21.12/24 dev eth1
+      cmd: sleep infinity
 
     haproxy1:
       kind: linux
       image: haproxy:latest
       binds:
         - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-        - ./keepalived/keepalived1.conf:/etc/keepalived/keepalived.conf
       ports:
         - 5432:5432
         - 5433:5433
@@ -70,9 +71,27 @@ topology:
       image: haproxy:latest
       binds:
         - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-        - ./keepalived/keepalived2.conf:/etc/keepalived/keepalived.conf
       cmd: sleep infinity
 
+    prometheus:
+      kind: linux
+      image: mirror.gcr.io/prom/prometheus:latest
+      binds:
+        - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      exec:
+        - ip addr add 172.20.24.10/24 dev eth1
+      ports:
+        - 9090:9090
+      cmd: --config.file=/etc/prometheus/prometheus.yml --web.listen-address=:9090
+
+    grafana:
+      kind: linux
+      image: mirror.gcr.io/grafana/grafana:latest
+      exec:
+        - ip addr add 172.20.24.11/24 dev eth1
+      ports:
+        - 3000:3000
+      cmd: /run.sh
   links:
     - endpoints: ["node1:eth1", "router:eth1"]
     - endpoints: ["node2:eth1", "router:eth2"]
@@ -82,3 +101,5 @@ topology:
     - endpoints: ["etcd2:eth1", "router:eth6"]
     - endpoints: ["etcd3:eth1", "router:eth7"]
     - endpoints: ["haproxy1:eth2", "haproxy2:eth2"]
+    - endpoints: ["prometheus:eth1", "router:eth8"]
+    - endpoints: ["grafana:eth1", "router:eth9"]
