@@ -8,22 +8,22 @@ all:
     linux:
       hosts:
         clab-pg-lab-etcd1:
-          ansible_host: 172.20.20.10
-        clab-pg-lab-etcd2:
           ansible_host: 172.20.20.9
-        clab-pg-lab-etcd3:
-          ansible_host: 172.20.20.11
-        clab-pg-lab-grafana:
-          ansible_host: 172.20.20.2
-        clab-pg-lab-haproxy1:
-          ansible_host: 172.20.20.6
-        clab-pg-lab-haproxy2:
-          ansible_host: 172.20.20.8
-        clab-pg-lab-node1:
-          ansible_host: 172.20.20.3
-        clab-pg-lab-node2:
-          ansible_host: 172.20.20.4
-        clab-pg-lab-prometheus:
-          ansible_host: 172.20.20.7
-        clab-pg-lab-router:
+        clab-pg-lab-etcd2:
           ansible_host: 172.20.20.5
+        clab-pg-lab-etcd3:
+          ansible_host: 172.20.20.8
+        clab-pg-lab-grafana:
+          ansible_host: 172.20.20.6
+        clab-pg-lab-haproxy1:
+          ansible_host: 172.20.20.7
+        clab-pg-lab-haproxy2:
+          ansible_host: 172.20.20.11
+        clab-pg-lab-node1:
+          ansible_host: 172.20.20.10
+        clab-pg-lab-node2:
+          ansible_host: 172.20.20.2
+        clab-pg-lab-prometheus:
+          ansible_host: 172.20.20.4
+        clab-pg-lab-router:
+          ansible_host: 172.20.20.3
