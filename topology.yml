@@ -21,6 +21,10 @@ topology:
         - ip addr add 172.20.24.254/24 dev eth10
         - ip addr add 172.20.24.254/24 dev eth11
         - ip addr add 172.20.24.254/24 dev eth12
+        - ip addr add 172.20.24.254/24 dev eth13
+        - ip addr add 172.20.24.254/24 dev eth14
+        - ip addr add 172.20.24.254/24 dev eth15
+        - ip addr add 172.20.24.254/24 dev eth16
         - sysctl -w net.ipv4.ip_forward=1
       cmd: /usr/lib/frr/docker-start
 
@@ -68,6 +72,7 @@ topology:
       ports:
         - 5432:5432
         - 5433:5433
+        - 8404:8404
       cmd: sleep infinity
 
     haproxy2:
@@ -138,6 +143,51 @@ topology:
       ports:
         - 8080:8080
 
+    elasticsearch:
+      kind: linux
+      image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+      exec:
+        - ip addr add 172.20.24.30/24 dev eth1
+      env:
+        discovery.type: single-node
+        xpack.security.enabled: false
+      ports:
+        - 9200:9200
+      cmd: /bin/tini -- /usr/local/bin/docker-entrypoint.sh
+
+    kibana:
+      kind: linux
+      image: docker.elastic.co/kibana/kibana:8.11.0
+      exec:
+        - ip addr add 172.20.24.31/24 dev eth1
+      env:
+        ELASTICSEARCH_HOSTS: http://172.20.24.30:9200
+      ports:
+        - 5601:5601
+
+    fluentd:
+      kind: linux
+      image: mirror.gcr.io/fluent/fluentd:latest
+      exec:
+        - ip addr add 172.20.24.32/24 dev eth1
+      binds:
+        - ./fluentd/fluentd.conf:/fluentd/etc/fluentd.conf
+      ports:
+        - 24224:24224
+      cmd: fluentd -c /fluentd/etc/fluentd.conf
+
+    jaeger:
+      kind: linux
+      image: mirror.gcr.io/jaegertracing/all-in-one:1.49
+      exec:
+        - ip addr add 172.20.24.40/24 dev eth1
+      env:
+        COLLECTOR_OTLP_ENABLED: true
+      ports:
+        - 16686:16686
+        - 4317:4317
+        - 4318:4318
+
   links:
     - endpoints: ["node1:eth1", "router:eth1"]
     - endpoints: ["node2:eth1", "router:eth2"]
@@ -152,3 +202,7 @@ topology:
     - endpoints: ["zabbix-server:eth1", "router:eth10"]
     - endpoints: ["zabbix-db:eth1", "router:eth11"]
     - endpoints: ["zabbix-web:eth1", "router:eth12"]
+    - endpoints: ["elasticsearch:eth1", "router:eth13"]
+    - endpoints: ["kibana:eth1", "router:eth14"]
+    - endpoints: ["fluentd:eth1", "router:eth15"]
+    - endpoints: ["jaeger:eth1", "router:eth16"]

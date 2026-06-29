@@ -1,0 +1,41 @@
+all:
+  vars:
+    # The generated inventory is assumed to be used from the clab host.
+    # Hence no http proxy should be used. Therefore we make sure the http
+    # module does not attempt using any global http proxy.
+    ansible_httpapi_use_proxy: false
+  children:
+    linux:
+      hosts:
+        clab-pg-lab1-elasticsearch:
+          ansible_host: 172.20.20.14
+        clab-pg-lab1-etcd1:
+          ansible_host: 172.20.20.9
+        clab-pg-lab1-etcd2:
+          ansible_host: 172.20.20.3
+        clab-pg-lab1-etcd3:
+          ansible_host: 172.20.20.10
+        clab-pg-lab1-fluentd:
+          ansible_host: 172.20.20.6
+        clab-pg-lab1-grafana:
+          ansible_host: 172.20.20.12
+        clab-pg-lab1-haproxy1:
+          ansible_host: 172.20.20.7
+        clab-pg-lab1-haproxy2:
+          ansible_host: 172.20.20.5
+        clab-pg-lab1-jaeger:
+          ansible_host: 172.20.20.15
+        clab-pg-lab1-node1:
+          ansible_host: 172.20.20.2
+        clab-pg-lab1-node2:
+          ansible_host: 172.20.20.4
+        clab-pg-lab1-prometheus:
+          ansible_host: 172.20.20.13
+        clab-pg-lab1-router:
+          ansible_host: 172.20.20.8
+        clab-pg-lab1-zabbix-db:
+          ansible_host: 172.20.20.16
+        clab-pg-lab1-zabbix-server:
+          ansible_host: 172.20.20.17
+        clab-pg-lab1-zabbix-web:
+          ansible_host: 172.20.20.11

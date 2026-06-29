@@ -71,9 +71,10 @@ until docker port clab-pg-lab-haproxy1 2>/dev/null | grep -q 5432; do
   echo -n "."
   sleep 1
 done
+echo "Ok"
 
-# zabbix
-echo -n "Configuring Zabbix network"
+# Zabbix Network
+echo -n "Configuring Zabbix network..."
 docker network rm zabbix-net 2>/dev/null
 docker network create zabbix-net --subnet=172.20.24.0/24
 docker network connect zabbix-net clab-pg-lab-zabbix-server --ip 172.20.24.20
@@ -81,8 +82,8 @@ docker network connect zabbix-net clab-pg-lab-zabbix-db --ip 172.20.24.21
 docker network connect zabbix-net clab-pg-lab-zabbix-web --ip 172.20.24.22
 echo "Ok"
 
-echo -n "Configuring Zabbix agent2 on node 1"
-
+# Zabbix Agent 2 на node1
+echo -n "Configuring Zabbix Agent 2 on node1..."
 docker exec -u root clab-pg-lab-node1 bash -c '
   if ! command -v zabbix_agent2 &> /dev/null; then
     wget -q https://repo.zabbix.com/zabbix/6.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.4-1+ubuntu22.04_all.deb -O /tmp/zabbix-release.deb
@@ -90,19 +91,6 @@ docker exec -u root clab-pg-lab-node1 bash -c '
     apt-get update -qq
     apt-get install -y -qq zabbix-agent2
   fi
-
-  echo "net.ipv6.conf.all.disable_ipv6=1" >> /etc/sysctl.conf
-  sysctl -p
-
-  cat > /etc/zabbix/zabbix_agent2.conf <<EOF
-Server=0.0.0.0/0
-ServerActive=172.20.20.11
-Hostname=PostgreSQL-Cluster
-ListenIP=0.0.0.0
-Plugins.MongoDB.System.Disabled=true
-Plugins.PostgreSQL.System.Disabled=true
-EOF
-
   mkdir -p /run/zabbix
   pkill -9 zabbix_agent2 2>/dev/null
   rm -f /var/run/zabbix/zabbix_agent2.pid 2>/dev/null
@@ -111,10 +99,12 @@ EOF
 echo "Ok"
 
 echo ""
-
 echo "Check:  docker exec clab-pg-lab-node1 patronictl -c /etc/patroni.yml list"
 echo "Write:  psql -h localhost -p 5432 -U postgres"
 echo "Read:   psql -h localhost -p 5433 -U postgres"
 echo "Prometheus: http://localhost:9090"
 echo "Grafana:    http://localhost:3000 (admin/admin)"
-echo "Zabbix web: http://localhost:8080 (Admin/zabbix)"
+echo "Zabbix:     http://localhost:8080 (Admin/zabbix)"
+echo "Kibana:     http://localhost:5601"
+echo "Jaeger:     http://localhost:16686"
+echo "HAProxy Stats: http://localhost:8404/stats (admin/admin)"

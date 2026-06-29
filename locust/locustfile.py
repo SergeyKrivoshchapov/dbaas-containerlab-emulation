@@ -3,6 +3,24 @@ import random
 import psycopg2
 from locust import User, task, between, events
 
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+import requests
+
+trace.set_tracer_provider(TracerProvider())
+otlp_exporter = OTLPSpanExporter(endpoint="http://172.20.24.40:4317", insecure=True)
+span_processor = BatchSpanProcessor(otlp_exporter)
+trace.get_tracer_provider().add_span_processor(span_processor)
+
+Psycopg2Instrumentor().instrument()
+RequestsInstrumentor().instrument()
+
+tracer = trace.get_tracer(__name__)
+
 
 class PgUser(User):
     wait_time = between(0.5, 2)
@@ -67,101 +85,116 @@ class PgUser(User):
     @task(3)
     def read_data(self):
         start = time.time()
-        try:
-            if not self.read_conn or self.read_conn.closed:
-                self.read_conn = psycopg2.connect(
-                    host="127.0.0.1",
-                    port=5433,
-                    user="postgres",
-                    password="mypassword",
-                    dbname="postgres",
-                )
-                self.read_conn.autocommit = True
-            cur = self.read_conn.cursor()
-            cur.execute("SELECT COUNT(*) FROM locust_test")
-            cur.fetchone()
-            cur.close()
-            success = True
-        except Exception:
-            success = False
-        events.request.fire(
-            request_type="READ",
-            name="select_count",
-            response_time=(time.time() - start) * 1000,
-            response_length=0,
-            success=success,
-        )
+        with tracer.start_as_current_span("read_data") as span:
+            span.set_attribute("db.system", "postgresql")
+            span.set_attribute("db.operation", "SELECT COUNT(*)")
+            try:
+                if not self.read_conn or self.read_conn.closed:
+                    self.read_conn = psycopg2.connect(
+                        host="127.0.0.1",
+                        port=5433,
+                        user="postgres",
+                        password="mypassword",
+                        dbname="postgres",
+                    )
+                    self.read_conn.autocommit = True
+                cur = self.read_conn.cursor()
+                cur.execute("SELECT COUNT(*) FROM locust_test")
+                cur.fetchone()
+                cur.close()
+                success = True
+            except Exception as e:
+                success = False
+                span.set_attribute("error", True)
+                span.set_attribute("error.message", str(e))
+            events.request.fire(
+                request_type="READ",
+                name="select_count",
+                response_time=(time.time() - start) * 1000,
+                response_length=0,
+                success=success,
+            )
 
     @task(2)
     def write_data(self):
         start = time.time()
-        try:
-            if not self.write_conn or self.write_conn.closed:
-                self.write_conn = psycopg2.connect(
-                    host="127.0.0.1",
-                    port=5432,
-                    user="postgres",
-                    password="mypassword",
-                    dbname="postgres",
+        with tracer.start_as_current_span("write_data") as span:
+            span.set_attribute("db.system", "postgresql")
+            span.set_attribute("db.operation", "INSERT")
+            try:
+                if not self.write_conn or self.write_conn.closed:
+                    self.write_conn = psycopg2.connect(
+                        host="127.0.0.1",
+                        port=5432,
+                        user="postgres",
+                        password="mypassword",
+                        dbname="postgres",
+                    )
+                    self.write_conn.autocommit = True
+                cur = self.write_conn.cursor()
+                cur.execute(
+                    "INSERT INTO locust_test (name, value) VALUES (%s, %s)",
+                    (f"user_{random.randint(1, 10000)}", random.randint(1, 1000)),
                 )
-                self.write_conn.autocommit = True
-            cur = self.write_conn.cursor()
-            cur.execute(
-                "INSERT INTO locust_test (name, value) VALUES (%s, %s)",
-                (f"user_{random.randint(1, 10000)}", random.randint(1, 1000)),
+                cur.close()
+                success = True
+            except Exception as e:
+                success = False
+                span.set_attribute("error", True)
+                span.set_attribute("error.message", str(e))
+            events.request.fire(
+                request_type="WRITE",
+                name="insert",
+                response_time=(time.time() - start) * 1000,
+                response_length=0,
+                success=success,
             )
-            cur.close()
-            success = True
-        except Exception:
-            success = False
-        events.request.fire(
-            request_type="WRITE",
-            name="insert",
-            response_time=(time.time() - start) * 1000,
-            response_length=0,
-            success=success,
-        )
 
     @task(1)
     def mixed_operation(self):
         start = time.time()
-        success = True
-        try:
-            if not self.read_conn or self.read_conn.closed:
-                self.read_conn = psycopg2.connect(
-                    host="127.0.0.1",
-                    port=5433,
-                    user="postgres",
-                    password="mypassword",
-                    dbname="postgres",
-                )
-                self.read_conn.autocommit = True
-            cur = self.read_conn.cursor()
-            cur.execute("SELECT COUNT(*) FROM locust_test WHERE value > %s", (500,))
-            cur.fetchone()
-            cur.close()
+        with tracer.start_as_current_span("mixed_operation") as span:
+            span.set_attribute("db.system", "postgresql")
+            span.set_attribute("db.operation", "SELECT + UPDATE")
+            success = True
+            try:
+                if not self.read_conn or self.read_conn.closed:
+                    self.read_conn = psycopg2.connect(
+                        host="127.0.0.1",
+                        port=5433,
+                        user="postgres",
+                        password="mypassword",
+                        dbname="postgres",
+                    )
+                    self.read_conn.autocommit = True
+                cur = self.read_conn.cursor()
+                cur.execute("SELECT COUNT(*) FROM locust_test WHERE value > %s", (500,))
+                cur.fetchone()
+                cur.close()
 
-            if not self.write_conn or self.write_conn.closed:
-                self.write_conn = psycopg2.connect(
-                    host="127.0.0.1",
-                    port=5432,
-                    user="postgres",
-                    password="mypassword",
-                    dbname="postgres",
+                if not self.write_conn or self.write_conn.closed:
+                    self.write_conn = psycopg2.connect(
+                        host="127.0.0.1",
+                        port=5432,
+                        user="postgres",
+                        password="mypassword",
+                        dbname="postgres",
+                    )
+                    self.write_conn.autocommit = True
+                cur = self.write_conn.cursor()
+                cur.execute(
+                    "UPDATE locust_test SET value = value + 1 WHERE id = %s",
+                    (random.randint(1, 100),),
                 )
-                self.write_conn.autocommit = True
-            cur = self.write_conn.cursor()
-            cur.execute(
-                "UPDATE locust_test SET value = value + 1 WHERE id = %s",
-                (random.randint(1, 100),),
+                cur.close()
+            except Exception as e:
+                success = False
+                span.set_attribute("error", True)
+                span.set_attribute("error.message", str(e))
+            events.request.fire(
+                request_type="MIXED",
+                name="read_write",
+                response_time=(time.time() - start) * 1000,
+                response_length=0,
+                success=success,
             )
-            cur.close()
-        except Exception:
-            success = False
-        events.request.fire(
-            request_type="MIXED",
-            name="read_write",
-            response_time=(time.time() - start) * 1000,
-            response_length=0,
-            success=success,
-        )
