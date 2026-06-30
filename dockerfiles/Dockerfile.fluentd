@@ -1,0 +1,11 @@
+FROM mirror.gcr.io/fluent/fluentd:v1.16-debian-1
+
+USER root
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN fluent-gem install fluent-plugin-elasticsearch --version 6.0.0 --no-document
+
+USER fluent
+
+CMD ["fluentd", "-c", "/fluentd/etc/fluentd.conf"]

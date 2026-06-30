@@ -16,17 +16,16 @@ echo -n "Waiting for router OSPF"
 sleep 3
 echo "Ok"
 
-# etcd1
-kitty --title="etcd1" bash -c "docker exec -it clab-pg-lab-etcd1 bash -c 'apt-get update -qq && yes N | apt-get install -y -qq etcd && etcd --name etcd1 --initial-cluster etcd1=http://clab-pg-lab-etcd1:2380,etcd2=http://clab-pg-lab-etcd2:2380,etcd3=http://clab-pg-lab-etcd3:2380 --initial-cluster-state new --initial-advertise-peer-urls http://clab-pg-lab-etcd1:2380 --listen-peer-urls http://[::]:2380 --listen-client-urls http://[::]:2379 --advertise-client-urls http://clab-pg-lab-etcd1:2379 --data-dir /tmp/etcd-data & exec bash'" &
-sleep 10
+kitty --title="etcd1" bash -c "docker exec -it clab-pg-lab-etcd1 bash -c 'etcd --name etcd1 --initial-cluster etcd1=http://clab-pg-lab-etcd1:2380,etcd2=http://clab-pg-lab-etcd2:2380,etcd3=http://clab-pg-lab-etcd3:2380 --initial-cluster-state new --initial-advertise-peer-urls http://clab-pg-lab-etcd1:2380 --listen-peer-urls http://[::]:2380 --listen-client-urls http://[::]:2379 --advertise-client-urls http://clab-pg-lab-etcd1:2379 --data-dir /tmp/etcd-data & exec bash'" &
+sleep 5
 
 # etcd2
-kitty --title="etcd2" bash -c "docker exec -it clab-pg-lab-etcd2 bash -c 'apt-get update -qq && yes N | apt-get install -y -qq etcd && etcd --name etcd2 --initial-cluster etcd1=http://clab-pg-lab-etcd1:2380,etcd2=http://clab-pg-lab-etcd2:2380,etcd3=http://clab-pg-lab-etcd3:2380 --initial-cluster-state new --initial-advertise-peer-urls http://clab-pg-lab-etcd2:2380 --listen-peer-urls http://[::]:2380 --listen-client-urls http://[::]:2379 --advertise-client-urls http://clab-pg-lab-etcd2:2379 --data-dir /tmp/etcd-data & exec bash'" &
-sleep 10
+kitty --title="etcd2" bash -c "docker exec -it clab-pg-lab-etcd2 bash -c 'etcd --name etcd2 --initial-cluster etcd1=http://clab-pg-lab-etcd1:2380,etcd2=http://clab-pg-lab-etcd2:2380,etcd3=http://clab-pg-lab-etcd3:2380 --initial-cluster-state new --initial-advertise-peer-urls http://clab-pg-lab-etcd2:2380 --listen-peer-urls http://[::]:2380 --listen-client-urls http://[::]:2379 --advertise-client-urls http://clab-pg-lab-etcd2:2379 --data-dir /tmp/etcd-data & exec bash'" &
+sleep 5
 
 # etcd3
-kitty --title="etcd3" bash -c "docker exec -it clab-pg-lab-etcd3 bash -c 'apt-get update -qq && yes N | apt-get install -y -qq etcd && etcd --name etcd3 --initial-cluster etcd1=http://clab-pg-lab-etcd1:2380,etcd2=http://clab-pg-lab-etcd2:2380,etcd3=http://clab-pg-lab-etcd3:2380 --initial-cluster-state new --initial-advertise-peer-urls http://clab-pg-lab-etcd3:2380 --listen-peer-urls http://[::]:2380 --listen-client-urls http://[::]:2379 --advertise-client-urls http://clab-pg-lab-etcd3:2379 --data-dir /tmp/etcd-data & exec bash'" &
-sleep 10
+kitty --title="etcd3" bash -c "docker exec -it clab-pg-lab-etcd3 bash -c 'etcd --name etcd3 --initial-cluster etcd1=http://clab-pg-lab-etcd1:2380,etcd2=http://clab-pg-lab-etcd2:2380,etcd3=http://clab-pg-lab-etcd3:2380 --initial-cluster-state new --initial-advertise-peer-urls http://clab-pg-lab-etcd3:2380 --listen-peer-urls http://[::]:2380 --listen-client-urls http://[::]:2379 --advertise-client-urls http://clab-pg-lab-etcd3:2379 --data-dir /tmp/etcd-data & exec bash'" &
+sleep 5
 
 # node 1
 echo -n "Starting Patroni node 1"
@@ -48,13 +47,9 @@ until docker exec clab-pg-lab-node2 timeout 1 bash -c 'echo > /dev/tcp/127.0.0.1
 done
 echo "Ok"
 
-# haproxy1 + haproxy2: установка iproute2 и IP
-docker exec -u root clab-pg-lab-haproxy1 bash -c 'apt-get update -qq && apt-get install -y -qq iproute2 && ip addr add 172.20.22.21/24 dev eth0' 2>/dev/null
-docker exec -u root clab-pg-lab-haproxy2 bash -c 'apt-get update -qq && apt-get install -y -qq iproute2 && ip addr add 172.20.22.22/24 dev eth0' 2>/dev/null
+docker exec -u root clab-pg-lab-haproxy1 bash -c 'ip addr add 172.20.22.21/24 dev eth0' 2>/dev/null
+docker exec -u root clab-pg-lab-haproxy2 bash -c 'ip addr add 172.20.22.22/24 dev eth0' 2>/dev/null
 
-# node_exporter на node1 и node2
-docker exec -u root clab-pg-lab-node1 bash -c 'apt-get update -qq && apt-get install -y -qq prometheus-node-exporter' 2>/dev/null
-docker exec -u root clab-pg-lab-node2 bash -c 'apt-get update -qq && apt-get install -y -qq prometheus-node-exporter' 2>/dev/null
 docker exec -d clab-pg-lab-node1 node_exporter --web.listen-address=:9100 2>/dev/null
 docker exec -d clab-pg-lab-node2 node_exporter --web.listen-address=:9100 2>/dev/null
 
@@ -73,7 +68,6 @@ until docker port clab-pg-lab-haproxy1 2>/dev/null | grep -q 5432; do
 done
 echo "Ok"
 
-# Zabbix Network
 echo -n "Configuring Zabbix network..."
 docker network rm zabbix-net 2>/dev/null
 docker network create zabbix-net --subnet=172.20.24.0/24
@@ -82,21 +76,20 @@ docker network connect zabbix-net clab-pg-lab-zabbix-db --ip 172.20.24.21
 docker network connect zabbix-net clab-pg-lab-zabbix-web --ip 172.20.24.22
 echo "Ok"
 
-# Zabbix Agent 2 на node1
-echo -n "Configuring Zabbix Agent 2 on node1..."
+echo -n "Starting Zabbix Agent 2 on node1..."
 docker exec -u root clab-pg-lab-node1 bash -c '
-  if ! command -v zabbix_agent2 &> /dev/null; then
-    wget -q https://repo.zabbix.com/zabbix/6.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.4-1+ubuntu22.04_all.deb -O /tmp/zabbix-release.deb
-    dpkg -i /tmp/zabbix-release.deb 2>/dev/null
-    apt-get update -qq
-    apt-get install -y -qq zabbix-agent2
-  fi
   mkdir -p /run/zabbix
   pkill -9 zabbix_agent2 2>/dev/null
   rm -f /var/run/zabbix/zabbix_agent2.pid 2>/dev/null
   /usr/sbin/zabbix_agent2 -c /etc/zabbix/zabbix_agent2.conf &
 ' 2>/dev/null
 echo "Ok"
+
+ES_IP=$(docker inspect clab-pg-lab-elasticsearch | grep IPAddress | awk -F'"' '{print $4}' | head -1)
+echo "Elasticsearch IP: $ES_IP"
+
+sed -i "s/host .*/host ${ES_IP}/" fluentd/fluentd.conf
+docker restart clab-pg-lab-fluentd
 
 echo ""
 echo "Check:  docker exec clab-pg-lab-node1 patronictl -c /etc/patroni.yml list"

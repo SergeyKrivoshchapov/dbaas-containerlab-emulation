@@ -3,17 +3,17 @@ elasticsearch:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.4
+    hostname: 172.20.20.12
 etcd1:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.7
+    hostname: 172.20.20.15
 etcd2:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.17
+    hostname: 172.20.20.3
 etcd3:
     username: 
     password: 
@@ -23,62 +23,62 @@ fluentd:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.8
+    hostname: 172.20.20.7
 grafana:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.15
+    hostname: 172.20.20.2
 haproxy1:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.10
+    hostname: 172.20.20.18
 haproxy2:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.18
+    hostname: 172.20.20.16
 jaeger:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.9
+    hostname: 172.20.20.11
 kibana:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.11
+    hostname: 172.20.20.9
 node1:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.2
+    hostname: 172.20.20.8
 node2:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.14
+    hostname: 172.20.20.4
 prometheus:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.12
+    hostname: 172.20.20.14
 router:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.3
+    hostname: 172.20.20.10
 zabbix-db:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.13
+    hostname: 172.20.20.17
 zabbix-server:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.16
+    hostname: 172.20.20.13
 zabbix-web:
     username: 
     password: 
