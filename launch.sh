@@ -91,6 +91,19 @@ echo "Elasticsearch IP: $ES_IP"
 sed -i "s/host .*/host ${ES_IP}/" fluentd/fluentd.conf
 docker restart clab-pg-lab-fluentd
 
+ES_IP=$(docker inspect clab-pg-lab-elasticsearch | grep IPAddress | awk -F'"' '{print $4}' | head -1)
+
+docker stop clab-pg-lab-kibana 2>/dev/null
+docker rm clab-pg-lab-kibana 2>/dev/null
+
+docker run -d \
+  --name clab-pg-lab-kibana \
+  --network clab \
+  --ip 172.20.20.100 \
+  -e ELASTICSEARCH_HOSTS="http://${ES_IP}:9200" \
+  -p 5601:5601 \
+  docker.elastic.co/kibana/kibana:9.0.0
+
 echo ""
 echo "Check:  docker exec clab-pg-lab-node1 patronictl -c /etc/patroni.yml list"
 echo "Write:  psql -h localhost -p 5432 -U postgres"
